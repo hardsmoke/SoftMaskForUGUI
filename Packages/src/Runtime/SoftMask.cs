@@ -324,6 +324,16 @@ namespace Coffee.UISoftMask
             }
         }
 
+#if UNITY_EDITOR
+        private static bool _editorIsQuitting = false;
+
+        [InitializeOnLoadMethod]
+        private static void InitQuitDetection()
+        {
+            EditorApplication.quitting += () => _editorIsQuitting = true;
+        }
+#endif
+
         /// <summary>
         /// Called when the component is enabled.
         /// </summary>
@@ -437,6 +447,9 @@ namespace Coffee.UISoftMask
 #if UNITY_EDITOR
         protected override void OnValidate()
         {
+            if (_editorIsQuitting)
+                return;
+        
             base.OnValidate();
             AddSoftMaskableOnChildren();
             SetSoftMaskDirty();
